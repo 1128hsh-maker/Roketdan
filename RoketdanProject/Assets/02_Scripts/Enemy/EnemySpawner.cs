@@ -10,6 +10,7 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private CurrencyManager currencyManager;
     [SerializeField] private Transform enemyRoot;
 
+
     public EnemyInstance Spawn(EnemyData enemyData)
     {
         if (enemyData == null)
@@ -38,6 +39,8 @@ public class EnemySpawner : MonoBehaviour
             return null;
         }
 
+        Vector3 goalPoint = path[path.Count - 1];
+
         GameObject enemyObj = Instantiate(enemyData.prefab, path[0], Quaternion.identity, enemyRoot);
 
         EnemyInstance instance = enemyObj.GetComponent<EnemyInstance>();
@@ -46,7 +49,8 @@ public class EnemySpawner : MonoBehaviour
             instance = enemyObj.AddComponent<EnemyInstance>();
         }
 
-        instance.Initialize(enemyData, path, enemyManager, commanderHealth, currencyManager);
+        instance.Initialize(enemyData, path, enemyManager, commanderHealth, currencyManager, goalPoint);
         return instance;
+
     }
 }

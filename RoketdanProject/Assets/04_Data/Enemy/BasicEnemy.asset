@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyId: BasicEnemy
   maxHp: 10
-  moveSpeed: 1
+  moveSpeed: 5
   contactDamage: 1
   killReward: 10
   prefab: {fileID: 3897862491039126197, guid: f98ee9767452f6440b545c1c4785f490, type: 3}

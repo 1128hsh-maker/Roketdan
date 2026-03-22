@@ -15,12 +15,16 @@ public class EnemyInstance : MonoBehaviour
     private CommanderHealth commanderHealth;
     private CurrencyManager currencyManager;
 
+    private Vector3 goalPoint;
+    private bool useGoalPoint;
+
     public void Initialize(
         EnemyData data,
         List<Vector3> path,
         EnemyManager manager,
         CommanderHealth commander,
-        CurrencyManager currency)
+        CurrencyManager currency,
+        Vector3? customGoalPoint = null)
     {
         Data = data;
         pathPoints = new List<Vector3>(path);
@@ -31,6 +35,12 @@ public class EnemyInstance : MonoBehaviour
         CurrentHp = data.maxHp;
         IsDead = false;
         currentPathIndex = 1;
+
+        useGoalPoint = customGoalPoint.HasValue;
+        if (useGoalPoint)
+        {
+            goalPoint = customGoalPoint.Value;
+        }
 
         gameObject.name = $"{data.enemyId}_Enemy";
 
@@ -67,6 +77,12 @@ public class EnemyInstance : MonoBehaviour
             target,
             Data.moveSpeed * Time.deltaTime
         );
+
+        if (useGoalPoint && Vector3.Distance(transform.position, goalPoint) <= 0.05f)
+        {
+            ReachGoal();
+            return;
+        }
 
         if (Vector3.Distance(transform.position, target) <= 0.01f)
         {
@@ -123,5 +139,9 @@ public class EnemyInstance : MonoBehaviour
 
         enemyManager?.Unregister(this);
         Destroy(gameObject);
+    }
+    public void ForceReachGoal()
+    {
+        ReachGoal();
     }
 }
