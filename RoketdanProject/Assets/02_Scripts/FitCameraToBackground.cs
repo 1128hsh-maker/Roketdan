@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Camera))]
-public class FitCameraToBackgroundHeight : MonoBehaviour
+public class FitCameraToBackground : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer backgroundRenderer;
 
@@ -15,11 +15,23 @@ public class FitCameraToBackgroundHeight : MonoBehaviour
         Apply();
     }
 
-    private void Apply()
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (cam == null)
+            cam = GetComponent<Camera>();
+
+        if (backgroundRenderer != null && cam != null)
+            Apply();
+    }
+#endif
+
+    [ContextMenu("Apply Fit")]
+    public void Apply()
     {
         if (backgroundRenderer == null)
         {
-            Debug.LogWarning("Background Renderer가 연결되지 않았습니다.");
+            Debug.LogWarning("[FitCameraToBackgroundHeight] backgroundRenderer가 연결되지 않았습니다.");
             return;
         }
 

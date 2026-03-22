@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2792b4cff265892489e003abb793c925, type: 3}
+  m_Name: 01_Ranged
+  m_EditorClassIdentifier: 
+  towerId: 01Ranged
+  installType: 1
+  grade: 3
+  buildCost: 10
+  prefab: {fileID: 4137935985034590991, guid: d6ac811878308564e8cdeae4a767bed0, type: 3}
+  nextGradeTower: {fileID: 0}
+  transcendTower: {fileID: 0}
