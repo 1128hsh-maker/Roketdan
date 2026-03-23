@@ -8,15 +8,15 @@ public class CellRuntime
     public Vector2Int coord;
     public CellType cellType;
     public bool isAdjacentToPath;
-    public TowerInstance placedTower;
+    public HeroInstance placedHero;
 
-    public bool HasTower => placedTower != null;
+    public bool HasHero => placedHero != null;
 
     public bool IsEmptyBuildable
     {
         get
         {
-            return cellType == CellType.Buildable && placedTower == null;
+            return cellType == CellType.Buildable && placedHero == null;
         }
     }
 
@@ -24,7 +24,7 @@ public class CellRuntime
     {
         get
         {
-            return cellType == CellType.Locked && placedTower == null;
+            return cellType == CellType.Locked && placedHero == null;
         }
     }
 }

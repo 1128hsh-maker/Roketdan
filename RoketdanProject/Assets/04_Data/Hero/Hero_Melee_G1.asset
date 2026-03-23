@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02d0ed1b0ef6af849922631173b501e5, type: 3}
+  m_Name: Hero_Melee_G1
+  m_EditorClassIdentifier: 
+  heroId: Melee_01
+  grade: 1
+  summonCost: 10
+  prefab: {fileID: 8370412375581687469, guid: 9c073d0d98e9cac408ed1e06bbabe283, type: 3}
+  attackRange: 10
+  attackDamage: 10
+  attackInterval: 0.8
+  nextGradeHero: {fileID: 11400000, guid: 2885ff4f315a2b44d91363f44a839ffe, type: 2}

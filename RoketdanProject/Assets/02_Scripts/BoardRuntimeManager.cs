@@ -47,7 +47,7 @@ public class BoardRuntimeManager : MonoBehaviour
                     coord = new Vector2Int(x, y),
                     cellType = stageMapData.GetCellType(x, y),
                     isAdjacentToPath = false,
-                    placedTower = null
+                    placedHero = null
                 };
             }
         }
@@ -78,20 +78,20 @@ public class BoardRuntimeManager : MonoBehaviour
         if (cell.cellType != CellType.Locked)
             return false;
 
-        if (cell.HasTower)
+        if (cell.HasHero)
             return false;
 
         cell.cellType = CellType.Buildable;
         return true;
     }
 
-    public void SetPlacedTower(int x, int y, TowerInstance tower)
+    public void SetPlacedTower(int x, int y, HeroInstance hero)
     {
         CellRuntime cell = GetCell(x, y);
         if (cell == null)
             return;
 
-        cell.placedTower = tower;
+        cell.placedHero = hero;
     }
 
     public void ClearPlacedTower(int x, int y)
@@ -100,7 +100,7 @@ public class BoardRuntimeManager : MonoBehaviour
         if (cell == null)
             return;
 
-        cell.placedTower = null;
+        cell.placedHero = null;
     }
 
     public List<Vector3> GetEnemyPathWorldPositions()

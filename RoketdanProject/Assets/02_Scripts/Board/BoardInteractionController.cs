@@ -9,12 +9,13 @@ public class BoardInteractionController : MonoBehaviour
     [SerializeField] private BoardGridByBounds boardGrid;
     [SerializeField] private BoardRuntimeManager boardRuntime;
     [SerializeField] private CurrencyManager currencyManager;
-    [SerializeField] private TowerManager towerManager;
+    [SerializeField] private HeroManager heroManager;
     [SerializeField] private ActionPanelUI actionPanelUI;
+    [SerializeField] private BoardVisualBuilder boardVisualBuilder;
 
     private bool hasSelectedCell;
     private Vector2Int selectedCell;
-    private TowerInstance selectedTower;
+    private HeroInstance selectedHero;
 
     private void Start()
     {
@@ -81,7 +82,7 @@ public class BoardInteractionController : MonoBehaviour
     {
         hasSelectedCell = true;
         selectedCell = cellPos;
-        selectedTower = null;
+        selectedHero = null;
 
         CellRuntime cell = boardRuntime.GetCell(cellPos.x, cellPos.y);
         if (cell == null)
@@ -90,33 +91,35 @@ public class BoardInteractionController : MonoBehaviour
             return;
         }
 
+        Vector3 cellWorldPos = boardGrid.GetCellCenter(cellPos.x, cellPos.y);
+
         if (cell.cellType == CellType.Blocked || cell.cellType == CellType.Path)
         {
             actionPanelUI.Hide();
             return;
         }
 
-        if (cell.cellType == CellType.Locked && !cell.HasTower)
+        if (cell.cellType == CellType.Locked && !cell.HasHero)
         {
-            actionPanelUI.ShowUnlock(cellPos, boardRuntime.DefaultUnlockCost);
+            actionPanelUI.ShowUnlock(cellPos, boardRuntime.DefaultUnlockCost, cellWorldPos);
             return;
         }
 
-        if (cell.cellType == CellType.Buildable && !cell.HasTower)
+        if (cell.cellType == CellType.Buildable && !cell.HasHero)
         {
-            TowerData buildData = towerManager.GetBuildDataForCell(cell);
-            actionPanelUI.ShowBuild(cellPos, buildData);
+            HeroData summonData = heroManager.GetSummonDataForCell(cell);
+            actionPanelUI.ShowBuild(cellPos, summonData != null ? summonData.summonCost : 0, cellWorldPos);
             return;
         }
 
-        if (cell.HasTower)
+        if (cell.HasHero)
         {
-            selectedTower = cell.placedTower;
+            selectedHero = cell.placedHero;
 
-            bool canMerge = towerManager.CanMerge(selectedTower);
-            bool canTranscend = towerManager.CanTranscend(selectedTower);
+            bool canPromote = heroManager.CanPromote(selectedHero);
+            bool canTranscend = false;
 
-            actionPanelUI.ShowTowerActions(selectedTower, canMerge, canTranscend);
+            actionPanelUI.ShowHeroActions(selectedHero, canPromote, canTranscend, selectedHero.transform.position);
             return;
         }
 
@@ -151,37 +154,23 @@ public class BoardInteractionController : MonoBehaviour
         if (!hasSelectedCell)
             return;
 
-        if (towerManager.TryBuildDefault(selectedCell, out TowerInstance builtTower))
+        if (heroManager.TrySummonDefault(selectedCell, out HeroInstance summonedHero))
         {
-            selectedTower = builtTower;
+            selectedHero = summonedHero;
             SelectCell(selectedCell);
         }
     }
 
-    public void OnClickMergeSelectedTower()
+    public void OnClickPromoteSelectedHero()
     {
-        if (selectedTower == null)
+        if (selectedHero == null)
             return;
 
-        if (towerManager.TryMerge(selectedTower, out TowerInstance mergedTower))
+        if (heroManager.TryPromote(selectedHero, out HeroInstance promotedHero))
         {
-            selectedTower = mergedTower;
+            selectedHero = promotedHero;
             hasSelectedCell = true;
-            selectedCell = mergedTower.CellPos;
-            SelectCell(selectedCell);
-        }
-    }
-
-    public void OnClickTranscendSelectedTower()
-    {
-        if (selectedTower == null)
-            return;
-
-        if (towerManager.TryTranscend(selectedTower, out TowerInstance transcendTower))
-        {
-            selectedTower = transcendTower;
-            hasSelectedCell = true;
-            selectedCell = transcendTower.CellPos;
+            selectedCell = promotedHero.CellPos;
             SelectCell(selectedCell);
         }
     }
@@ -189,7 +178,7 @@ public class BoardInteractionController : MonoBehaviour
     public void ClearSelection()
     {
         hasSelectedCell = false;
-        selectedTower = null;
+        selectedHero = null;
 
         if (actionPanelUI != null)
             actionPanelUI.Hide();

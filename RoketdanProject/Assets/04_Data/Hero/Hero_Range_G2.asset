@@ -9,13 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2792b4cff265892489e003abb793c925, type: 3}
-  m_Name: 01_Melee
+  m_Script: {fileID: 11500000, guid: 02d0ed1b0ef6af849922631173b501e5, type: 3}
+  m_Name: Hero_Range_G2
   m_EditorClassIdentifier: 
-  towerId: 01Melee
-  installType: 0
+  heroId: Range_02
   grade: 1
-  buildCost: 10
-  prefab: {fileID: 2480274464751728794, guid: 0a1b7fbf8eb59404f94e11d20f5f7191, type: 3}
-  nextGradeTower: {fileID: 0}
-  transcendTower: {fileID: 0}
+  summonCost: 100
+  prefab: {fileID: 0}
+  attackRange: 30
+  attackDamage: 20
+  attackInterval: 1
+  nextGradeHero: {fileID: 0}

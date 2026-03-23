@@ -45,3 +45,6 @@ TagManager:
   - name: Board
     uniqueID: 1744642561
     locked: 0
+  - name: Hero
+    uniqueID: 3415732665
+    locked: 0

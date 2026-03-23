@@ -154,6 +154,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   controller: {fileID: 249884867}
   root: {fileID: 9039119}
+  canvas: {fileID: 96050508}
+  worldCamera: {fileID: 519420031}
+  screenOffset: {x: 0, y: -80}
   unlockButton: {fileID: 313825325}
   buildButton: {fileID: 1720682075}
   mergeButton: {fileID: 1555313697}
@@ -380,6 +383,60 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &129314580
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 129314582}
+  - component: {fileID: 129314581}
+  m_Layer: 0
+  m_Name: HeroManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &129314581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 129314580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a43dc0efdb64f74583efe9a10f61d9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boardGrid: {fileID: 932722792}
+  boardRuntime: {fileID: 1848547384}
+  currencyManager: {fileID: 116228342}
+  enemyManager: {fileID: 30896086}
+  defaultMeleeHero: {fileID: 11400000, guid: b560a95b2a4f2d444b88c065559ecf7d, type: 2}
+  defaultRangedHero: {fileID: 11400000, guid: 7df3319452eae984482b18e827aa4ac9, type: 2}
+  heroRoot: {fileID: 549956407}
+  heroSortingLayerName: Hero
+  heroSortingOrder: 100
+  heroCellFitRatio: 0.65
+--- !u!4 &129314582
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 129314580}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &202632727
 GameObject:
   m_ObjectHideFlags: 0
@@ -534,7 +591,7 @@ MonoBehaviour:
   boardGrid: {fileID: 932722792}
   boardRuntime: {fileID: 1848547384}
   currencyManager: {fileID: 116228342}
-  towerManager: {fileID: 1515490352}
+  heroManager: {fileID: 129314581}
   actionPanelUI: {fileID: 9039120}
 --- !u!4 &249884868
 Transform:
@@ -1179,6 +1236,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundRenderer: {fileID: 666707861}
+--- !u!1 &549956406
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 549956407}
+  m_Layer: 0
+  m_Name: HeroRoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &549956407
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 549956406}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -1216,7 +1304,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
-  m_ApplyToSortingLayers: 000000000122fd67
+  m_ApplyToSortingLayers: 000000000122fd67b9f197cb
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -1834,56 +1922,6 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1455593456}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1515490351
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1515490353}
-  - component: {fileID: 1515490352}
-  m_Layer: 0
-  m_Name: TowerManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1515490352
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1515490351}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c41cc2fe16df74841b7b15133dbf06d6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  boardGrid: {fileID: 932722792}
-  boardRuntime: {fileID: 1848547384}
-  currencyManager: {fileID: 116228342}
-  defaultMeleeTower: {fileID: 11400000, guid: 7e8777b10f078b9468bfe2ac5fa771bb, type: 2}
-  defaultRangedTower: {fileID: 11400000, guid: 02be71b523abcfb41953a34403001534, type: 2}
-  towerRoot: {fileID: 863643655}
---- !u!4 &1515490353
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1515490351}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -2726,7 +2764,6 @@ SceneRoots:
   - {fileID: 2141812824}
   - {fileID: 1848547385}
   - {fileID: 116228343}
-  - {fileID: 1515490353}
   - {fileID: 96050505}
   - {fileID: 1455593459}
   - {fileID: 249884868}
@@ -2736,3 +2773,5 @@ SceneRoots:
   - {fileID: 434697797}
   - {fileID: 1078869371}
   - {fileID: 2106252994}
+  - {fileID: 129314582}
+  - {fileID: 549956407}
