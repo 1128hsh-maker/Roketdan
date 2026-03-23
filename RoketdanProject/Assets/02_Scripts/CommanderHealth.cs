@@ -32,13 +32,14 @@ public class CommanderHealth : MonoBehaviour
             return;
 
         CurrentHealth = Mathf.Max(0, CurrentHealth - amount);
+
         Debug.Log($"[CommanderHealth] 지휘관 피해 {amount}, 현재 체력: {CurrentHealth}/{MaxHealth}");
 
         NotifyChanged();
 
         if (CurrentHealth <= 0)
         {
-            Debug.Log("[CommanderHealth] 지휘관 체력이 0이 되어 패배했습니다.");
+            Debug.Log("[CommanderHealth] Commander 사망 -> 패배");
             OnDefeated?.Invoke();
         }
     }

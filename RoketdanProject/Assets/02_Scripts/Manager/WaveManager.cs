@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class WaveManager : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField] private EnemySpawner enemySpawner;
     [SerializeField] private EnemyManager enemyManager;
     [SerializeField] private CommanderHealth commanderHealth;
@@ -17,7 +18,10 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private float waveInterval = 2f;
     [SerializeField] private bool autoStart = true;
 
-    public int CurrentWaveNumber { get; private set; }
+    public int CurrentWaveIndex { get; private set; } = -1;
+    public int CurrentWaveNumber => CurrentWaveIndex + 1;
+    public int TotalWaveCount => waves != null ? waves.Count : 0;
+    public bool IsBattleRunning { get; private set; }
     public bool IsGameEnded { get; private set; }
 
     public event Action<int> OnWaveStarted;
@@ -52,20 +56,42 @@ public class WaveManager : MonoBehaviour
     [ContextMenu("Start Battle")]
     public void StartBattle()
     {
-        if (IsGameEnded)
+        if (IsBattleRunning || IsGameEnded)
             return;
 
-        StopAllCoroutines();
-        StartCoroutine(RunBattleLoop());
-    }
+        if (enemySpawner == null)
+        {
+            Debug.LogError("[WaveManager] EnemySpawner가 연결되지 않았습니다.");
+            return;
+        }
 
-    private IEnumerator RunBattleLoop()
-    {
+        if (enemyManager == null)
+        {
+            Debug.LogError("[WaveManager] EnemyManager가 연결되지 않았습니다.");
+            return;
+        }
+
+        if (commanderHealth == null)
+        {
+            Debug.LogError("[WaveManager] CommanderHealth가 연결되지 않았습니다.");
+            return;
+        }
+
         if (waves == null || waves.Count == 0)
         {
             Debug.LogWarning("[WaveManager] WaveData가 하나도 없습니다.");
-            yield break;
+            return;
         }
+
+        StopAllCoroutines();
+        StartCoroutine(BattleLoop());
+    }
+
+    private IEnumerator BattleLoop()
+    {
+        IsBattleRunning = true;
+        IsGameEnded = false;
+        CurrentWaveIndex = -1;
 
         yield return new WaitForSeconds(gameStartDelay);
 
@@ -74,12 +100,15 @@ public class WaveManager : MonoBehaviour
             if (IsGameEnded)
                 yield break;
 
-            CurrentWaveNumber = i + 1;
+            CurrentWaveIndex = i;
+
             Debug.Log($"[WaveManager] Wave {CurrentWaveNumber} 시작");
             OnWaveStarted?.Invoke(CurrentWaveNumber);
 
             yield return StartCoroutine(SpawnWave(waves[i]));
 
+            // 이번 웨이브 적 생성이 끝난 뒤,
+            // 맵 위 적이 전부 사라질 때까지 기다림
             yield return new WaitUntil(() => IsGameEnded || enemyManager.AliveCount == 0);
 
             if (IsGameEnded)
@@ -88,18 +117,22 @@ public class WaveManager : MonoBehaviour
             Debug.Log($"[WaveManager] Wave {CurrentWaveNumber} 종료");
             OnWaveCleared?.Invoke(CurrentWaveNumber);
 
-            if (i < waves.Count - 1)
+            bool isLastWave = (i == waves.Count - 1);
+
+            // 마지막 웨이브면 여기서 승리 체크
+            if (isLastWave)
+            {
+                if (!commanderHealth.IsDead && enemyManager.AliveCount == 0)
+                {
+                    HandleVictory();
+                    yield break;
+                }
+            }
+            else
             {
                 yield return new WaitForSeconds(waveInterval);
             }
         }
-
-        if (IsGameEnded)
-            yield break;
-
-        IsGameEnded = true;
-        Debug.Log("[WaveManager] 모든 웨이브 종료, 승리");
-        OnVictory?.Invoke();
     }
 
     private IEnumerator SpawnWave(WaveData wave)
@@ -117,17 +150,32 @@ public class WaveManager : MonoBehaviour
             if (entry == null || entry.enemyData == null)
                 continue;
 
-            for (int count = 0; count < entry.count; count++)
+            int spawnCount = Mathf.Max(1, entry.count);
+            float spawnInterval = Mathf.Max(0.01f, entry.interval);
+
+            for (int j = 0; j < spawnCount; j++)
             {
                 if (IsGameEnded)
                     yield break;
 
                 enemySpawner.Spawn(entry.enemyData);
-
-                float interval = Mathf.Max(0.01f, entry.interval);
-                yield return new WaitForSeconds(interval);
+                yield return new WaitForSeconds(spawnInterval);
             }
         }
+    }
+
+    private void HandleVictory()
+    {
+        if (IsGameEnded)
+            return;
+
+        IsGameEnded = true;
+        IsBattleRunning = false;
+
+        StopAllCoroutines();
+
+        Debug.Log("[WaveManager] 모든 웨이브 종료 + Commander 생존 -> 승리");
+        OnVictory?.Invoke();
     }
 
     private void HandleDefeat()
@@ -136,9 +184,11 @@ public class WaveManager : MonoBehaviour
             return;
 
         IsGameEnded = true;
+        IsBattleRunning = false;
+
         StopAllCoroutines();
 
-        Debug.Log("[WaveManager] 지휘관 체력 0, 패배");
+        Debug.Log("[WaveManager] Commander 사망 -> 패배");
         OnDefeat?.Invoke();
     }
 }

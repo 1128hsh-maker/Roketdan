@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,6 +9,8 @@ public class EnemyInstance : MonoBehaviour
     public int CurrentHp { get; private set; }
     public bool IsDead { get; private set; }
 
+    public event Action<int, int> OnHpChanged;
+
     private List<Vector3> pathPoints;
     private int currentPathIndex;
 
@@ -15,16 +18,12 @@ public class EnemyInstance : MonoBehaviour
     private CommanderHealth commanderHealth;
     private CurrencyManager currencyManager;
 
-    private Vector3 goalPoint;
-    private bool useGoalPoint;
-
     public void Initialize(
         EnemyData data,
         List<Vector3> path,
         EnemyManager manager,
         CommanderHealth commander,
-        CurrencyManager currency,
-        Vector3? customGoalPoint = null)
+        CurrencyManager currency)
     {
         Data = data;
         pathPoints = new List<Vector3>(path);
@@ -36,12 +35,6 @@ public class EnemyInstance : MonoBehaviour
         IsDead = false;
         currentPathIndex = 1;
 
-        useGoalPoint = customGoalPoint.HasValue;
-        if (useGoalPoint)
-        {
-            goalPoint = customGoalPoint.Value;
-        }
-
         gameObject.name = $"{data.enemyId}_Enemy";
 
         if (pathPoints.Count > 0)
@@ -50,6 +43,7 @@ public class EnemyInstance : MonoBehaviour
         }
 
         enemyManager?.Register(this);
+        NotifyHpChanged();
     }
 
     private void Update()
@@ -78,12 +72,6 @@ public class EnemyInstance : MonoBehaviour
             Data.moveSpeed * Time.deltaTime
         );
 
-        if (useGoalPoint && Vector3.Distance(transform.position, goalPoint) <= 0.05f)
-        {
-            ReachGoal();
-            return;
-        }
-
         if (Vector3.Distance(transform.position, target) <= 0.01f)
         {
             currentPathIndex++;
@@ -103,10 +91,17 @@ public class EnemyInstance : MonoBehaviour
         CurrentHp = Mathf.Max(0, CurrentHp - amount);
         Debug.Log($"[EnemyInstance] {Data.enemyId} 피해 {amount}, 현재 HP: {CurrentHp}");
 
+        NotifyHpChanged();
+
         if (CurrentHp <= 0)
         {
             Die();
         }
+    }
+
+    public void ForceReachGoal()
+    {
+        ReachGoal();
     }
 
     private void ReachGoal()
@@ -138,10 +133,15 @@ public class EnemyInstance : MonoBehaviour
         }
 
         enemyManager?.Unregister(this);
+
         Destroy(gameObject);
     }
-    public void ForceReachGoal()
+
+    private void NotifyHpChanged()
     {
-        ReachGoal();
+        if (Data != null)
+        {
+            OnHpChanged?.Invoke(CurrentHp, Data.maxHp);
+        }
     }
 }
