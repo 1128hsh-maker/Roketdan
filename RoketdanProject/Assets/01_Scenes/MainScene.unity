@@ -3322,6 +3322,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2095403277}
   - component: {fileID: 2095403276}
+  - component: {fileID: 2095403280}
   - component: {fileID: 2095403278}
   - component: {fileID: 2095403279}
   m_Layer: 0
@@ -3411,7 +3412,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae7b588a149cc6844b5816f10aa25577, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 10
+  maxHealth: 150
 --- !u!70 &2095403279
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -3447,6 +3448,23 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 1, y: 2}
   m_Direction: 0
+--- !u!114 &2095403280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2095403275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a48aa50f41d7e3c4d8dfd97fd0fc7226, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  commanderHealth: {fileID: 2095403278}
+  enemyManager: {fileID: 30896086}
+  attackRange: 3
+  attackDamage: 5
+  attackInterval: 0.5
 --- !u!1 &2106252993
 GameObject:
   m_ObjectHideFlags: 0

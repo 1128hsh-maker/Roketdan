@@ -16,7 +16,7 @@ MonoBehaviour:
   grade: 1
   summonCost: 100
   prefab: {fileID: 4774114608907528549, guid: 7d579b7eb0039974bb21a0b39755ef5d, type: 3}
-  attackRange: 30
-  attackDamage: 20
+  attackRange: 7
+  attackDamage: 4
   attackInterval: 1
   nextGradeHero: {fileID: 0}

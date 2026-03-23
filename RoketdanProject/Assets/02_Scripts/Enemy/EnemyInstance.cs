@@ -8,6 +8,7 @@ public class EnemyInstance : MonoBehaviour
     public EnemyData Data { get; private set; }
     public int CurrentHp { get; private set; }
     public bool IsDead { get; private set; }
+    public bool IsAttackingCommander { get; private set; }
 
     public event Action<int, int> OnHpChanged;
 
@@ -17,6 +18,9 @@ public class EnemyInstance : MonoBehaviour
     private EnemyManager enemyManager;
     private CommanderHealth commanderHealth;
     private CurrencyManager currencyManager;
+
+    private float attackTimer;
+    private bool reachedPathEnd;
 
     public void Initialize(
         EnemyData data,
@@ -33,6 +37,9 @@ public class EnemyInstance : MonoBehaviour
 
         CurrentHp = data.maxHp;
         IsDead = false;
+        IsAttackingCommander = false;
+        reachedPathEnd = false;
+        attackTimer = 0f;
         currentPathIndex = 1;
 
         gameObject.name = $"{data.enemyId}_Enemy";
@@ -51,6 +58,12 @@ public class EnemyInstance : MonoBehaviour
         if (IsDead)
             return;
 
+        if (IsAttackingCommander)
+        {
+            AttackCommander();
+            return;
+        }
+
         MoveAlongPath();
     }
 
@@ -59,9 +72,12 @@ public class EnemyInstance : MonoBehaviour
         if (Data == null || pathPoints == null || pathPoints.Count == 0)
             return;
 
+        if (reachedPathEnd)
+            return;
+
         if (currentPathIndex >= pathPoints.Count)
         {
-            ReachGoal();
+            reachedPathEnd = true;
             return;
         }
 
@@ -78,9 +94,44 @@ public class EnemyInstance : MonoBehaviour
 
             if (currentPathIndex >= pathPoints.Count)
             {
-                ReachGoal();
+                reachedPathEnd = true;
             }
         }
+    }
+
+    public void BeginCommanderAttack()
+    {
+        if (IsDead)
+            return;
+
+        if (commanderHealth == null || commanderHealth.IsDead)
+            return;
+
+        if (IsAttackingCommander)
+            return;
+
+        IsAttackingCommander = true;
+        attackTimer = 0f;
+
+        Debug.Log($"[EnemyInstance] {Data.enemyId} 가 Commander와 접촉, 근접 공격 시작");
+    }
+
+    private void AttackCommander()
+    {
+        if (commanderHealth == null || commanderHealth.IsDead)
+            return;
+
+        attackTimer += Time.deltaTime;
+
+        float interval = Mathf.Max(0.05f, Data.attackInterval);
+
+        if (attackTimer < interval)
+            return;
+
+        attackTimer = 0f;
+
+        Debug.Log($"[EnemyInstance] {Data.enemyId} 가 Commander 공격 / 데미지 {Data.contactDamage}");
+        commanderHealth.TakeDamage(Data.contactDamage);
     }
 
     public void TakeDamage(int amount)
@@ -99,25 +150,6 @@ public class EnemyInstance : MonoBehaviour
         }
     }
 
-    public void ForceReachGoal()
-    {
-        ReachGoal();
-    }
-
-    private void ReachGoal()
-    {
-        if (IsDead)
-            return;
-
-        IsDead = true;
-
-        Debug.Log($"[EnemyInstance] {Data.enemyId} 골인, 지휘관에게 {Data.contactDamage} 피해");
-        commanderHealth?.TakeDamage(Data.contactDamage);
-        enemyManager?.Unregister(this);
-
-        Destroy(gameObject);
-    }
-
     private void Die()
     {
         if (IsDead)
@@ -133,7 +165,6 @@ public class EnemyInstance : MonoBehaviour
         }
 
         enemyManager?.Unregister(this);
-
         Destroy(gameObject);
     }
 
