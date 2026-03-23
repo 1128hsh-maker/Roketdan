@@ -145,6 +145,11 @@ public class BoardInteractionController : MonoBehaviour
 
         if (boardRuntime.UnlockCell(selectedCell.x, selectedCell.y))
         {
+            if (boardVisualBuilder != null)
+            {
+                boardVisualBuilder.RefreshCell(selectedCell.x, selectedCell.y);
+            }
+
             SelectCell(selectedCell);
         }
     }

@@ -593,6 +593,7 @@ MonoBehaviour:
   currencyManager: {fileID: 116228342}
   heroManager: {fileID: 129314581}
   actionPanelUI: {fileID: 9039120}
+  boardVisualBuilder: {fileID: 1200968633}
 --- !u!4 &249884868
 Transform:
   m_ObjectHideFlags: 0
