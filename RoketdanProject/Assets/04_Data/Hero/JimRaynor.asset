@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02d0ed1b0ef6af849922631173b501e5, type: 3}
+  m_Name: JimRaynor
+  m_EditorClassIdentifier: 
+  heroId: JimRaynor
+  grade: 1
+  summonCost: 0
+  prefab: {fileID: 9076364937514109038, guid: 11be6dfbaf8b84e4b888ec16edc4ec35, type: 3}
+  attackRange: 1000
+  attackDamage: 1000
+  attackInterval: 0.01
+  promoteCost: 100
+  nextGradeHero: {fileID: 0}
+  transcendCostMineral: 100
+  transcendOptionA: {fileID: 0}
+  transcendOptionB: {fileID: 0}
+  transcendOptionC: {fileID: 0}

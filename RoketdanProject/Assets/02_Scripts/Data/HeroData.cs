@@ -17,6 +17,13 @@ public class HeroData : ScriptableObject
     public int attackDamage = 1;
     public float attackInterval = 1.0f;
 
-    [Header("Upgrade")]
+    [Header("Promotion")]
+    public int promoteCost = 100;
     public HeroData nextGradeHero;
+
+    [Header("Transcend")]
+    public int transcendCostMineral = 100;
+    public HeroData transcendOptionA;
+    public HeroData transcendOptionB;
+    public HeroData transcendOptionC;
 }

@@ -19,4 +19,9 @@ MonoBehaviour:
   attackRange: 3
   attackDamage: 4
   attackInterval: 0.8
+  promoteCost: 100
   nextGradeHero: {fileID: 0}
+  transcendCostMineral: 100
+  transcendOptionA: {fileID: 11400000, guid: 2172b318e07e02a46830d11515249805, type: 2}
+  transcendOptionB: {fileID: 11400000, guid: bc78ab2d7c5bdcd48b7e0a91ead43983, type: 2}
+  transcendOptionC: {fileID: 11400000, guid: 9bf9db23d346a5a4fb48fc72d8fcf5f0, type: 2}

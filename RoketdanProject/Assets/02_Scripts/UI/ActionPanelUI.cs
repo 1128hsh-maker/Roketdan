@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,6 +19,12 @@ public class ActionPanelUI : MonoBehaviour
     [SerializeField] private Button buildButton;
     [SerializeField] private Button mergeButton;
     [SerializeField] private Button transcendButton;
+
+    [Header("Button Texts")]
+    [SerializeField] private TMP_Text unlockButtonText;
+    [SerializeField] private TMP_Text buildButtonText;
+    [SerializeField] private TMP_Text mergeButtonText;
+    [SerializeField] private TMP_Text transcendButtonText;
 
     private RectTransform panelRect;
 
@@ -43,6 +50,9 @@ public class ActionPanelUI : MonoBehaviour
         if (mergeButton != null)
             mergeButton.onClick.AddListener(controller.OnClickPromoteSelectedHero);
 
+        if (transcendButton != null)
+            transcendButton.onClick.AddListener(controller.OnClickOpenTranscendPanel);
+
         Hide();
     }
 
@@ -55,7 +65,8 @@ public class ActionPanelUI : MonoBehaviour
         if (unlockButton != null)
             unlockButton.gameObject.SetActive(true);
 
-        Debug.Log($"[UI] Locked Cell {cellPos} / Unlock Cost = {cost}");
+        if (unlockButtonText != null)
+            unlockButtonText.text = $"Unlock ({cost})";
     }
 
     public void ShowBuild(Vector2Int cellPos, int cost, Vector3 worldPos)
@@ -67,10 +78,11 @@ public class ActionPanelUI : MonoBehaviour
         if (buildButton != null)
             buildButton.gameObject.SetActive(true);
 
-        Debug.Log($"[UI] Build Cell {cellPos} / Summon Cost = {cost}");
+        if (buildButtonText != null)
+            buildButtonText.text = $"Build ({cost})";
     }
 
-    public void ShowHeroActions(HeroInstance hero, bool canPromote, bool canTranscend, Vector3 worldPos)
+    public void ShowHeroActions(HeroInstance hero, bool canPromote, bool canTranscend, int promoteCost, int transcendCost, Vector3 worldPos)
     {
         ShowRoot();
         HideAllButtons();
@@ -82,10 +94,11 @@ public class ActionPanelUI : MonoBehaviour
         if (transcendButton != null)
             transcendButton.gameObject.SetActive(canTranscend);
 
-        if (hero != null && hero.Data != null)
-        {
-            Debug.Log($"[UI] Hero Selected = {hero.Data.heroId} / Grade = {hero.Data.grade}");
-        }
+        if (mergeButtonText != null)
+            mergeButtonText.text = $"Promote ({promoteCost})";
+
+        if (transcendButtonText != null)
+            transcendButtonText.text = $"Transcend ({transcendCost})";
     }
 
     public void Hide()

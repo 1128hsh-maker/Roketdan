@@ -12,6 +12,7 @@ public class BoardInteractionController : MonoBehaviour
     [SerializeField] private HeroManager heroManager;
     [SerializeField] private ActionPanelUI actionPanelUI;
     [SerializeField] private BoardVisualBuilder boardVisualBuilder;
+    [SerializeField] private TranscendPanelUI transcendPanelUI;
 
     private bool hasSelectedCell;
     private Vector2Int selectedCell;
@@ -24,6 +25,9 @@ public class BoardInteractionController : MonoBehaviour
 
         if (actionPanelUI != null)
             actionPanelUI.Hide();
+
+        if (transcendPanelUI != null)
+            transcendPanelUI.Hide();
     }
 
     private void Update()
@@ -84,6 +88,9 @@ public class BoardInteractionController : MonoBehaviour
         selectedCell = cellPos;
         selectedHero = null;
 
+        if (transcendPanelUI != null)
+            transcendPanelUI.Hide();
+
         CellRuntime cell = boardRuntime.GetCell(cellPos.x, cellPos.y);
         if (cell == null)
         {
@@ -117,9 +124,18 @@ public class BoardInteractionController : MonoBehaviour
             selectedHero = cell.placedHero;
 
             bool canPromote = heroManager.CanPromote(selectedHero);
-            bool canTranscend = false;
+            bool canTranscend = heroManager.CanTranscend(selectedHero);
+            int promoteCost = heroManager.GetPromoteCost(selectedHero);
+            int transcendCost = heroManager.GetTranscendCost(selectedHero);
 
-            actionPanelUI.ShowHeroActions(selectedHero, canPromote, canTranscend, selectedHero.transform.position);
+            actionPanelUI.ShowHeroActions(
+                selectedHero,
+                canPromote,
+                canTranscend,
+                promoteCost,
+                transcendCost,
+                selectedHero.transform.position
+            );
             return;
         }
 
@@ -146,9 +162,7 @@ public class BoardInteractionController : MonoBehaviour
         if (boardRuntime.UnlockCell(selectedCell.x, selectedCell.y))
         {
             if (boardVisualBuilder != null)
-            {
                 boardVisualBuilder.RefreshCell(selectedCell.x, selectedCell.y);
-            }
 
             SelectCell(selectedCell);
         }
@@ -180,6 +194,57 @@ public class BoardInteractionController : MonoBehaviour
         }
     }
 
+    public void OnClickOpenTranscendPanel()
+    {
+        if (selectedHero == null)
+            return;
+
+        if (!heroManager.CanTranscend(selectedHero))
+            return;
+
+        if (transcendPanelUI == null)
+            return;
+
+        HeroData optionA = heroManager.GetTranscendOption(selectedHero, 0);
+        HeroData optionB = heroManager.GetTranscendOption(selectedHero, 1);
+        HeroData optionC = heroManager.GetTranscendOption(selectedHero, 2);
+        int cost = heroManager.GetTranscendCost(selectedHero);
+
+        transcendPanelUI.Show(selectedHero, optionA, optionB, optionC, cost);
+    }
+
+    public void OnClickTranscendOptionA()
+    {
+        TryTranscendOption(0);
+    }
+
+    public void OnClickTranscendOptionB()
+    {
+        TryTranscendOption(1);
+    }
+
+    public void OnClickTranscendOptionC()
+    {
+        TryTranscendOption(2);
+    }
+
+    private void TryTranscendOption(int optionIndex)
+    {
+        if (selectedHero == null)
+            return;
+
+        if (heroManager.TryTranscend(selectedHero, optionIndex, out HeroInstance transcendedHero))
+        {
+            if (transcendPanelUI != null)
+                transcendPanelUI.Hide();
+
+            selectedHero = transcendedHero;
+            hasSelectedCell = true;
+            selectedCell = transcendedHero.CellPos;
+            SelectCell(selectedCell);
+        }
+    }
+
     public void ClearSelection()
     {
         hasSelectedCell = false;
@@ -187,5 +252,8 @@ public class BoardInteractionController : MonoBehaviour
 
         if (actionPanelUI != null)
             actionPanelUI.Hide();
+
+        if (transcendPanelUI != null)
+            transcendPanelUI.Hide();
     }
 }

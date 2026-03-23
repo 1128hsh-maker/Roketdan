@@ -7,6 +7,7 @@ public class HeroManager : MonoBehaviour
     [SerializeField] private BoardGridByBounds boardGrid;
     [SerializeField] private BoardRuntimeManager boardRuntime;
     [SerializeField] private CurrencyManager currencyManager;
+    [SerializeField] private MineralManager mineralManager;
     [SerializeField] private EnemyManager enemyManager;
 
     [Header("Default Heroes")]
@@ -31,6 +32,46 @@ public class HeroManager : MonoBehaviour
             return null;
 
         return cell.isAdjacentToPath ? defaultMeleeHero : defaultRangedHero;
+    }
+
+    public int GetPromoteCost(HeroInstance selected)
+    {
+        if (selected == null || selected.Data == null)
+            return 0;
+
+        return selected.Data.promoteCost;
+    }
+
+    public int GetTranscendCost(HeroInstance selected)
+    {
+        if (selected == null || selected.Data == null)
+            return 0;
+
+        return selected.Data.transcendCostMineral;
+    }
+
+    public bool CanTranscend(HeroInstance selected)
+    {
+        if (selected == null || selected.Data == null)
+            return false;
+
+        return selected.Data.transcendOptionA != null ||
+               selected.Data.transcendOptionB != null ||
+               selected.Data.transcendOptionC != null;
+    }
+
+    public HeroData GetTranscendOption(HeroInstance selected, int optionIndex)
+    {
+        if (selected == null || selected.Data == null)
+            return null;
+
+        switch (optionIndex)
+        {
+            case 0: return selected.Data.transcendOptionA;
+            case 1: return selected.Data.transcendOptionB;
+            case 2: return selected.Data.transcendOptionC;
+            default: return null;
+        }
     }
 
     public bool TrySummonDefault(Vector2Int cellPos, out HeroInstance summonedHero)
@@ -97,17 +138,28 @@ public class HeroManager : MonoBehaviour
         if (!CanPromote(selected))
             return false;
 
+        if (currencyManager == null)
+        {
+            Debug.LogError("[HeroManager] CurrencyManager가 연결되지 않았습니다.");
+            return false;
+        }
+
+        int promoteCost = GetPromoteCost(selected);
+
+        if (!currencyManager.Spend(promoteCost))
+        {
+            Debug.Log("[HeroManager] 골드가 부족해서 승급 실패");
+            return false;
+        }
+
         HeroInstance material = FindPromotionMaterial(selected);
         if (material == null)
             return false;
 
         HeroData nextData = selected.Data.nextGradeHero;
-        if (nextData == null)
-            return false;
-
-        if (nextData.prefab == null)
+        if (nextData == null || nextData.prefab == null)
         {
-            Debug.LogWarning($"[HeroManager] {nextData.heroId} prefab이 비어 있습니다.");
+            Debug.LogWarning("[HeroManager] nextGradeHero 또는 prefab이 비어 있습니다.");
             return false;
         }
 
@@ -118,6 +170,47 @@ public class HeroManager : MonoBehaviour
 
         promotedHero = SpawnHero(nextData, selectedCell);
         return promotedHero != null;
+    }
+
+    public bool TryTranscend(HeroInstance selected, int optionIndex, out HeroInstance transcendedHero)
+    {
+        transcendedHero = null;
+
+        if (!CanTranscend(selected))
+            return false;
+
+        if (mineralManager == null)
+        {
+            Debug.LogError("[HeroManager] MineralManager가 연결되지 않았습니다.");
+            return false;
+        }
+
+        HeroData chosenData = GetTranscendOption(selected, optionIndex);
+        if (chosenData == null)
+        {
+            Debug.LogWarning("[HeroManager] 선택한 초월 옵션이 비어 있습니다.");
+            return false;
+        }
+
+        if (chosenData.prefab == null)
+        {
+            Debug.LogWarning("[HeroManager] 선택한 초월 HeroData의 prefab이 비어 있습니다.");
+            return false;
+        }
+
+        int transcendCost = GetTranscendCost(selected);
+
+        if (!mineralManager.Spend(transcendCost))
+        {
+            Debug.Log("[HeroManager] 미네랄 부족으로 초월 실패");
+            return false;
+        }
+
+        Vector2Int selectedCell = selected.CellPos;
+
+        RemoveHero(selected);
+        transcendedHero = SpawnHero(chosenData, selectedCell);
+        return transcendedHero != null;
     }
 
     private HeroInstance FindPromotionMaterial(HeroInstance selected)
@@ -180,7 +273,6 @@ public class HeroManager : MonoBehaviour
             cell.placedHero = instance;
         }
 
-        Debug.Log($"[HeroManager] Hero 생성 완료: {data.heroId} / 위치 {spawnPos}");
         return instance;
     }
 
